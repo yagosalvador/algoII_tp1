@@ -97,22 +97,20 @@ class DFT {
         if (N == 1) {
             return y;
         }
-        else {
-            Vector<Complex> even = y.slice(0, -1, 2);  // take the even indexes
-            Vector<Complex> odd = y.slice(1, -1, 2);  // take the odd indexes
-            even = fft(even, w);
-            odd = fft(odd, w);
-            //y = even + odd;
+        Vector<Complex> even = y.slice(0, -1, 2);  // take the even indexes
+        Vector<Complex> odd = y.slice(1, -1, 2);  // take the odd indexes
+        even = fft(even, w);
+        odd = fft(odd, w);
+        //y = even + odd;
 
-            for (size_t i = 0; i < N/2; ++i) {
-                double argument = -(w*i)/N;
-                Complex twiddle(std::cos(argument), std::sin(argument));
-                //Complex even = y[i];
-                odd[i] *= twiddle;
+        for (size_t i = 0; i < N/2; ++i) {
+            double argument = -(w*i)/N;
+            Complex twiddle(std::cos(argument), std::sin(argument));
+            //Complex even = y[i];
+            odd[i] *= twiddle;
 
-                y[i] = even[i] + odd[i];
-                y[i+N/2] = even[i] - odd[i];
-            }
+            y[i] = even[i] + odd[i];
+            y[i+N/2] = even[i] - odd[i];
         }
         return y;
     }
