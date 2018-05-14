@@ -1,5 +1,5 @@
 CXX = g++
-CPPFLAGS = -std=c++98 -Wall -pedantic-errors -g
+CPPFLAGS = -std=c++98 -Wall -pedantic-errors -g -O3
 
 TESTS_DIR = ./tests
 GTEST_FLAGS = -lpthread -lgtest -I.

@@ -124,7 +124,7 @@ int main(int argc, char * const argv[]) {
     std::cout << "Cantidad de elementos: " << v.getSize() << std::endl;
 
     begin = clock();
-    //DFT::ditfft2(v);
+    DFT::fft(v);
 
     end = clock();
     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
@@ -137,10 +137,10 @@ int main(int argc, char * const argv[]) {
     c.append(Complex(1,0));
     c.append(Complex(1,0));
     c.append(Complex(1,0));
-    *oss << v << endl;
-    Vector<Complex> whatever = DFT::ditfft2(v);
-    *oss << whatever << endl;
-    *oss << DFT::ditifft2(whatever) << endl;
+    // *oss << "v = " << v << endl;
+    // Vector<Complex> whatever = DFT::fft(v);
+    // *oss << "fft(v) = " << whatever << endl;
+    // *oss << "ifft = " << DFT::ifft(whatever) << endl;
 
     return 0;
 }

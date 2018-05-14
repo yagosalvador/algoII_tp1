@@ -90,7 +90,7 @@ class DFT {
     //     return y;
     // }
 
-    static Vector<Complex> ditfft2(const Vector<Complex> &x) {
+    static Vector<Complex> fft(const Vector<Complex> &x, double w = 2*M_PI) {
         Vector<Complex> y = Vector<Complex>(x);
 
         size_t N = y.getSize();
@@ -100,16 +100,12 @@ class DFT {
         else {
             Vector<Complex> even = y.slice(0, -1, 2);  // take the even indexes
             Vector<Complex> odd = y.slice(1, -1, 2);  // take the odd indexes
-            // std::cout << "------------------" << std::endl;
-            // std::cout << "Y: " << y << std::endl;
-            // std::cout << "Even: " << even << std::endl;
-            // std::cout << "Odd: " << odd << std::endl;
-            even = ditfft2(even);
-            odd = ditfft2(odd);
+            even = fft(even, w);
+            odd = fft(odd, w);
             //y = even + odd;
 
             for (size_t i = 0; i < N/2; ++i) {
-                double argument = -(2*M_PI*i)/N;
+                double argument = -(w*i)/N;
                 Complex twiddle(std::cos(argument), std::sin(argument));
                 //Complex even = y[i];
                 odd[i] *= twiddle;
@@ -121,33 +117,8 @@ class DFT {
         return y;
     }
 
-    static Vector<Complex> ditifft2(const Vector<Complex> &x) {
-        Vector<Complex> y = Vector<Complex>(x);
-
-        size_t N = y.getSize();
-        if (N == 1) {
-            return y;
-        }
-        else {
-            Vector<Complex> even = y.slice(0, -1, 2);  // take the even indexes
-            Vector<Complex> odd = y.slice(1, -1, 2);  // take the odd indexes
-
-            even = ditifft2(even);
-            odd = ditifft2(odd);
-            //y = even + odd;
-
-            for (size_t i = 0; i < N/2; ++i) {
-                double argument = (2*M_PI*i)/N;
-                Complex twiddle(cos(argument), sin(argument));
-                //Complex even = y[i];
-                odd[i] *= twiddle/N;
-                even[i] /= N;
-
-                y[i] = even[i] + odd[i];
-                y[i+N/2] = even[i] - odd[i];
-            }
-        }
-        return y;
+    static Vector<Complex> ifft(const Vector<Complex> &x) {
+        return fft(x, -2*M_PI)/x.getSize();
     }
 
     // static vector< complex<double> > transform(const vector< complex<double> >& x) {
