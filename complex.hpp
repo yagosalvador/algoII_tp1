@@ -115,8 +115,9 @@ class Complex{
     }
 
     Complex& operator*=(const Complex& r) {
-        real = real*r.real - imag*r.imag;
-        imag = real*r.imag + imag*r.real;
+        Complex temp(real*r.real - imag*r.imag, real*r.imag + imag*r.real);
+        real = temp.real;
+        imag = temp.imag;
         return *this;
     }
 

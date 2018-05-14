@@ -2,7 +2,7 @@ CXX = g++
 CPPFLAGS = -std=c++98 -Wall -pedantic-errors -g
 
 TESTS_DIR = ./tests
-GTEST_FLAGS = -lpthread -lgtest
+GTEST_FLAGS = -lpthread -lgtest -I.
 
 all: tp1 diff_complex test_all
 
