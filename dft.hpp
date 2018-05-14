@@ -105,7 +105,7 @@ class DFT {
 
         for (size_t i = 0; i < N/2; ++i) {
             double argument = -(w*i)/N;
-            Complex twiddle(std::cos(argument), std::sin(argument));
+            Complex twiddle(cos(argument), sin(argument));
             //Complex even = y[i];
             odd[i] *= twiddle;
 
