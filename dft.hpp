@@ -1,11 +1,13 @@
-#ifndef DFT_HPP__
-#define DFT_HPP__
+#ifndef FT_HPP__
+#define FT_HPP__
 
 #include <cfloat>  // For DBL_EPSILON
 #include <cmath>
 #include <iostream>
 #include "vector.hpp"
 #include "complex.hpp"
+
+using std::string;
 
 // #define DFT_TOLERANCE 10E-4
 // #include <vector>
@@ -15,9 +17,16 @@
 // using std::pow;
 
 
-class DFT {
+class FourierTransform
+{
+public:
+	~FourierTransform(){};
+	virtual Vector<Complex> transform(const Vector<Complex>& x)=0;
+};
+
+class DFT: public FourierTransform{
  public:
-    static Vector<Complex> transform(const Vector<Complex>& x) {
+    virtual Vector<Complex> transform(const Vector<Complex>& x) {
         Vector<Complex> y = Vector<Complex>(x);
 
         size_t N = x.getSize();
@@ -89,8 +98,40 @@ class DFT {
     //     }
     //     return y;
     // }
+};
+class IDFT: public FourierTransform{
+  public:
+    virtual Vector<Complex> transform(const Vector<Complex>& x){
+        Vector<Complex> y = Vector<Complex>(x);
 
-    static Vector<Complex> fft(const Vector<Complex> &x, double w = 2*M_PI) {
+        size_t N = x.getSize();
+        double argument = (2*M_PI)/N;
+        Complex wn(cos(argument), sin(argument));
+        for (Vector<Complex>::iterator yi = y.begin(); yi != y.end(); ++yi) {
+            size_t i = yi - y.begin();
+            *yi = Complex();
+            for (Vector<Complex>::iterator xj = x.begin(); xj != x.end(); ++xj) {
+                size_t j = xj - x.begin();
+                *yi += (*xj)*(wn^(i*j));
+            }
+            *yi /= N;
+
+            //  Sets to 0 components that are almost 0
+            // if (std::abs((*yi).getReal()) < DFT_TOLERANCE)
+            //     (*yi).setReal(0);
+            // if (std::abs((*yi).getImag()) < DFT_TOLERANCE)
+            //     (*yi).setImag(0);
+        }
+
+        return y;
+    }
+
+};
+
+class FFT: public FourierTransform
+{
+public:
+	    static virtual Vector<Complex> transform(const Vector<Complex> &x, double w = 2*M_PI) {
         Vector<Complex> y = Vector<Complex>(x);
 
         size_t N = y.getSize();
@@ -99,8 +140,8 @@ class DFT {
         }
         Vector<Complex> even = y.slice(0, -1, 2);  // take the even indexes
         Vector<Complex> odd = y.slice(1, -1, 2);  // take the odd indexes
-        even = fft(even, w);
-        odd = fft(odd, w);
+        even = transform(even, w);
+        odd = transform(odd, w);
         //y = even + odd;
 
         for (size_t i = 0; i < N/2; ++i) {
@@ -112,11 +153,7 @@ class DFT {
             y[i+N/2] = even[i] - odd[i];
         }
         return y;
-    }
-
-    static Vector<Complex> ifft(const Vector<Complex> &x) {
-        return fft(x, -2*M_PI)/x.getSize();
-    }
+}
 
     // static vector< complex<double> > transform(const vector< complex<double> >& x) {
     //     vector< complex<double> > y = vector< complex<double> >(x);
@@ -161,32 +198,13 @@ class DFT {
     //     }
 
     //     return y;
-    // }
-
-    static Vector<Complex> inverse(const Vector<Complex>& x){
-        Vector<Complex> y = Vector<Complex>(x);
-
-        size_t N = x.getSize();
-        double argument = (2*M_PI)/N;
-        Complex wn(cos(argument), sin(argument));
-        for (Vector<Complex>::iterator yi = y.begin(); yi != y.end(); ++yi) {
-            size_t i = yi - y.begin();
-            *yi = Complex();
-            for (Vector<Complex>::iterator xj = x.begin(); xj != x.end(); ++xj) {
-                size_t j = xj - x.begin();
-                *yi += (*xj)*(wn^(i*j));
-            }
-            *yi /= N;
-
-            //  Sets to 0 components that are almost 0
-            // if (std::abs((*yi).getReal()) < DFT_TOLERANCE)
-            //     (*yi).setReal(0);
-            // if (std::abs((*yi).getImag()) < DFT_TOLERANCE)
-            //     (*yi).setImag(0);
-        }
-
-        return y;
-    }
+    // }	
 };
 
-#endif  // DFT_HPP_
+class IFFT: public FourierTransform{
+  public:
+   	virtual Vector<Complex> transform(const Vector<Complex> & x){
+ 		return FFT::transform(x, -2*M_PI)/x.getSize();   	}
+};
+
+#endif  // FT_HPP_
